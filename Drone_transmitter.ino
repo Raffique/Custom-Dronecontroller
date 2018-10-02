@@ -56,8 +56,8 @@ Data_to_be_sent sent_data;
 boolean changes = false;
 int threshold = 100;
 unsigned long lastTime = millis();
-long StickPos = 0;
-long count = 0;
+int StickPos = 0;
+unsigned long timing = 0;
 
 void setup()
 { 
@@ -119,31 +119,36 @@ void loop()
         
         sent_data.RX = map(Xbox.getAnalogHat(RightHatX), -32768, 32767, 0, 255);
         changes = true;
-        count++; //testing purposes
-        Serial.print(count);Serial.print(" RX: ");Serial.println(sent_data.RX);
+         Serial.print("RX: ");Serial.println(sent_data.RX);
       }
       if (Xbox.getAnalogHat(RightHatY) > threshold || Xbox.getAnalogHat(RightHatY) < -threshold) {
         
         //sent_data.RY = map(Xbox.getAnalogHat(RightHatY), -32768, 32767, 0, 255);
         int data = Xbox.getAnalogHat(RightHatY);
-        if(millis() - lastTime > 61){ 
+        if(data >= 0){ 
+            timing = map(data, 0, 32767, 61, 30);
+        }
+        else{
+            timing = map(data, -1, -32768, 61, 30);
+        }
+        if(millis() - lastTime > timing){ 
       
          if(data >= 0){
-            StickPos += map(data, 0, 32767, 0, 2000);
+            StickPos += 1;
          }
          else{
-            StickPos += map(data, -1, -32768, 0, -2000);
+            StickPos -= 1;
          }
           
-        if (StickPos > 32767){
-          StickPos = 32767;
+        if (StickPos > 255){
+          StickPos = 255;
         }
-        if (StickPos < -32768){
-          StickPos = -32768;
+        if (StickPos < 0){
+          StickPos = 0;
         }
     
         lastTime = millis();
-        sent_data.RY = map(StickPos, -32768, 32767, 0, 255);
+        sent_data.RY = StickPos;
         changes = true;
         Serial.print("RY: ");Serial.println(sent_data.RY);
         }

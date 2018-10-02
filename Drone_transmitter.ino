@@ -260,7 +260,7 @@ void loop()
 void reset_data(){
  //Reset each channel value
   //sent_data.up = 0; // used to control flight mode, keep value
-  //sent_data.down = 0; // used to control flight mode, keep value
+  sent_data.down = 0; 
   sent_data.right = 0;
   sent_data.left = 0;
   
